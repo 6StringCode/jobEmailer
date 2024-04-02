@@ -21,12 +21,15 @@ setInterval(async () => {
       sendEmail(data)
     }
 
+    sendEmail(data)
+
     previousState = data
 
   } catch (error) {
     console.log('Failed to fetch Jobs', error)
   }
-}, 6 * 60 * 60 * 1000) //6hrs
+  // }, 6 * 60 * 60 * 1000) //6hrs
+}, 10000) //6hrs
 
 
 function sendEmail(jobData) {
