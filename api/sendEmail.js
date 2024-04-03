@@ -60,7 +60,7 @@ async function sendEmail() {
       html: `<h1>There have been no updates</h1>${jobsHtml}`
     }
 
-    console.log("mailOptions:", mailOptions.subject)
+    // console.log("mailOptions:", mailOptions.subject)
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -87,7 +87,9 @@ async function sendEmail() {
 module.exports = async (req, res) => {
   try {
     await sendEmail();
+    console.log("first call ran")
     setTimeout(async () => await sendEmail(), 2000)
+    console.log("second call ran")
     res.status(200).send('Email sent');
   } catch (error) {
     res.status(500).send('An error occurred while sending email');
