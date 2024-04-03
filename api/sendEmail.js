@@ -1,4 +1,5 @@
 require('dotenv').config()
+const { default: axios } = require('axios');
 const nodemailer = require('nodemailer');
 
 const email = process.env.EMAIL;
@@ -9,8 +10,8 @@ let previousState = null
 
 const getJobs = async () => {
   try {
-    const response = await fetch(nytJobUrl)
-    const data = await response.json()
+    const response = await axios.get(nytJobUrl)
+    const data = await response.data
 
     return data
   } catch (error) {
@@ -74,10 +75,21 @@ async function sendEmail() {
   }
 }
 
-(async () => {
-  await sendEmail();
+// (async () => {
+//   await sendEmail();
 
-  // Check the value of previousState here...
-})();
+//   // Check the value of previousState here...
+// })();
 
-setTimeout(async () => await sendEmail(), 2000)
+// setTimeout(async () => await sendEmail(), 2000)
+
+
+module.exports = async (req, res) => {
+  try {
+    await sendEmail();
+    setTimeout(async () => await sendEmail(), 2000)
+    res.status(200).send('Email sent');
+  } catch (error) {
+    res.status(500).send('An error occurred while sending email');
+  }
+};
