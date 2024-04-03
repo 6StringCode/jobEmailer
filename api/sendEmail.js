@@ -44,7 +44,7 @@ async function sendEmail() {
     }).join('')
 
 
-    // console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
+    console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
 
     let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
       from: email,
@@ -60,7 +60,7 @@ async function sendEmail() {
       html: `<h1>There have been no updates</h1>${jobsHtml}`
     }
 
-    // console.log("mailOptions:", mailOptions.subject)
+    console.log("mailOptions:", mailOptions.subject)
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -75,19 +75,16 @@ async function sendEmail() {
   }
 }
 
-// (async () => {
-//   await sendEmail();
-
-//   // Check the value of previousState here...
-// })();
+// sendEmail();
 
 // setTimeout(async () => await sendEmail(), 2000)
 
 
 module.exports = async (req, res) => {
   try {
-    await sendEmail().then(() => console.log("first call ran"))
-    setTimeout(async () => await sendEmail().then(() => console.log("second call ran")), 2000)
+    await sendEmail()
+    console.log("first call ran")
+
     res.status(200).send('Email sent');
   } catch (error) {
     res.status(500).send('An error occurred while sending email');
