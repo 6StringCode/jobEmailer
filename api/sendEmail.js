@@ -12,7 +12,7 @@ const getJobs = async () => {
   try {
     const response = await axios.get(nytJobUrl)
     const data = await response.data
-    console.log(data)
+    // console.log(data)
     return data
   } catch (error) {
     console.log('Failed to fetch Jobs', error)
@@ -86,7 +86,7 @@ async function sendEmail() {
 
 module.exports = async (req, res) => {
   try {
-    await sendEmail().then(console.log("first call ran"))
+    await sendEmail().then(() => console.log("first call ran"))
     setTimeout(async () => await sendEmail().then(() => console.log("second call ran")), 2000)
     res.status(200).send('Email sent');
   } catch (error) {
