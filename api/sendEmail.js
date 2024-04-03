@@ -32,6 +32,9 @@ async function sendEmail() {
   function emailHandler(jobData) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: {
         user: email,
         pass
@@ -44,7 +47,7 @@ async function sendEmail() {
     }).join('')
 
 
-    console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
+    // console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
 
     let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
       from: email,
@@ -62,6 +65,18 @@ async function sendEmail() {
 
     console.log("mailOptions:", mailOptions.subject)
 
+
+    // verify connection configuration
+    transporter.verify(function (error, success) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Server is ready to take our messages");
+      }
+    });
+
+
+    //verify package is installed - ***
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log('Error Sending Email:', error)
@@ -69,6 +84,9 @@ async function sendEmail() {
         console.log('Email sent:', info.response)
       }
     })
+
+    //verify that we get here
+    console.log("We got here")
 
     previousState = jobData
     // console.log("end of handler", JSON.stringify(previousState) === JSON.stringify(jobData))
