@@ -19,6 +19,35 @@ const getJobs = async () => {
   }
 }
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: email,
+    pass
+  }
+})
+
+const transporterHandler = async (mailOptions, callback) => {
+  try {
+    const info = await transporter.sendMail(mailOptions)
+    callback(info)
+    console.log('Email sent:', info.response)
+  } catch (error) {
+    console.log('Error Sending Email:', error)
+  }
+}
+
+// const transporterHandler = transporter.sendMail(mailOptions, (error, info) => {
+//   if (error) {
+//     console.log('Error Sending Email:', error)
+//   } else {
+//     console.log('Email sent:', info.response)
+//   }
+// })
+
 
 async function sendEmail() {
   const jobData = await getJobs()
@@ -26,71 +55,66 @@ async function sendEmail() {
   // console.log("me first")
 
 
-  emailHandler(jobData)
+  // emailHandler(jobData)
 
 
-  function emailHandler(jobData) {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: email,
-        pass
-      }
-    })
-
-    const jobsHtml = jobData.jobs.map(job => {
-      const date = new Date(job.updated_at).toLocaleString();
-      return `<a href="${job.absolute_url}"><b>${job.title}</b> - Updated at: ${date}</a><br/>`;
-    }).join('')
+  // function emailHandler(jobData) {
 
 
-    // console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
-
-    let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
-      from: email,
-      to: email,
-      subject: `${jobData.jobs.length} NYT Jobs Updated`,
-      text: 'The data has been updated',
-      html: `<h1>NYT Job Update</h1>${jobsHtml}`
-    } : {
-      from: email,
-      to: email,
-      subject: `${jobData.jobs.length} NYT Jobs: No Updates`,
-      text: 'The data hasnt been updated',
-      html: `<h1>There have been no updates</h1>${jobsHtml}`
-    }
-
-    console.log("mailOptions:", mailOptions.subject)
+  const jobsHtml = jobData.jobs.map(job => {
+    const date = new Date(job.updated_at).toLocaleString();
+    return `<a href="${job.absolute_url}"><b>${job.title}</b> - Updated at: ${date}</a><br/>`;
+  }).join('')
 
 
-    // verify connection configuration
-    transporter.verify(function (error, success) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Server is ready to take our messages");
-      }
-    });
+  // console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
 
-
-    //verify package is installed - ***
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log('Error Sending Email:', error)
-      } else {
-        console.log('Email sent:', info.response)
-      }
-    })
-
-    //verify that we get here
-    console.log("We got here")
-
-    previousState = jobData
-    // console.log("end of handler", JSON.stringify(previousState) === JSON.stringify(jobData))
+  let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
+    from: email,
+    to: email,
+    subject: `${jobData.jobs.length} NYT Jobs Updated`,
+    text: 'The data has been updated',
+    html: `<h1>NYT Job Update</h1>${jobsHtml}`
+  } : {
+    from: email,
+    to: email,
+    subject: `${jobData.jobs.length} NYT Jobs: No Updates`,
+    text: 'The data hasnt been updated',
+    html: `<h1>There have been no updates</h1>${jobsHtml}`
   }
+
+  console.log("mailOptions:", mailOptions.subject)
+
+
+  // verify connection configuration
+  transporter.verify(async (error, success) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Server is ready to take our messages");
+    }
+  });
+
+  transporterHandler(mailOptions, (info) => {
+    console.log("Email sent successfully");
+    console.log("MESSAGE ID: ", info.messageId);
+  })
+
+  //verify package is installed - ***
+  // transporter.sendMail(mailOptions, (error, info) => {
+  //   if (error) {
+  //     console.log('Error Sending Email:', error)
+  //   } else {
+  //     console.log('Email sent:', info.response)
+  //   }
+  // })
+
+  //verify that we get here
+  console.log("We got here")
+
+  previousState = jobData
+  // console.log("end of handler", JSON.stringify(previousState) === JSON.stringify(jobData))
+  // }
 }
 
 // sendEmail();
