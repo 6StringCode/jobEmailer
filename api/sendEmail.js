@@ -52,15 +52,9 @@ const transporterHandler = async (mailOptions, callback) => {
 async function sendEmail() {
   const jobData = await getJobs()
   // console.log(jobData.meta.total)
-  // console.log("me first")
 
 
-  // emailHandler(jobData)
-
-
-  // function emailHandler(jobData) {
-
-
+  //Email Html Formatting
   const jobsHtml = jobData.jobs.map(job => {
     const date = new Date(job.updated_at).toLocaleString();
     return `<a href="${job.absolute_url}"><b>${job.title}</b> - Updated at: ${date}</a><br/>`;
@@ -100,7 +94,7 @@ async function sendEmail() {
     console.log("MESSAGE ID: ", info.messageId);
   })
 
-  //verify package is installed - ***
+
   // transporter.sendMail(mailOptions, (error, info) => {
   //   if (error) {
   //     console.log('Error Sending Email:', error)
@@ -113,8 +107,7 @@ async function sendEmail() {
   console.log("We got here")
 
   previousState = jobData
-  // console.log("end of handler", JSON.stringify(previousState) === JSON.stringify(jobData))
-  // }
+
 }
 
 // sendEmail();
