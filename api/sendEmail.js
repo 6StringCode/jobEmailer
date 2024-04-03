@@ -12,7 +12,7 @@ const getJobs = async () => {
   try {
     const response = await axios.get(nytJobUrl)
     const data = await response.data
-
+    console.log(data)
     return data
   } catch (error) {
     console.log('Failed to fetch Jobs', error)
@@ -44,7 +44,7 @@ async function sendEmail() {
     }).join('')
 
 
-    console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
+    // console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
 
     let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
       from: email,
@@ -71,7 +71,7 @@ async function sendEmail() {
     })
 
     previousState = jobData
-    console.log("end of handler", JSON.stringify(previousState) === JSON.stringify(jobData))
+    // console.log("end of handler", JSON.stringify(previousState) === JSON.stringify(jobData))
   }
 }
 
@@ -86,10 +86,8 @@ async function sendEmail() {
 
 module.exports = async (req, res) => {
   try {
-    await sendEmail();
-    console.log("first call ran")
-    setTimeout(async () => await sendEmail(), 2000)
-    console.log("second call ran")
+    await sendEmail().then(console.log("first call ran"))
+    setTimeout(async () => await sendEmail().then(() => console.log("second call ran")), 2000)
     res.status(200).send('Email sent');
   } catch (error) {
     res.status(500).send('An error occurred while sending email');
