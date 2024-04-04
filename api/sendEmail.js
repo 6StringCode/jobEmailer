@@ -49,7 +49,7 @@ const transporterHandler = async (mailOptions, callback) => {
 // })
 
 
-async function sendEmail() {
+async function sendEmail(res) {
   const jobData = await getJobs()
   // console.log(jobData.meta.total)
 
@@ -125,7 +125,7 @@ async function sendEmail() {
 
 module.exports = async (req, res) => {
   try {
-    await sendEmail()
+    await sendEmail(res)
     console.log("first call ran")
     // setTimeout(() => console.log("setTimeout"), 3000)
 
