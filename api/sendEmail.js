@@ -80,17 +80,6 @@ async function sendEmail(res) {
   console.log("mailOptions:", mailOptions.subject)
 
   try {
-    // await new Promise((resolve, reject) => {
-    //   transporter.verify(async (error, success) => {
-    //     if (error) {
-    //       console.log(error);
-    //       reject(error)
-    //     } else {
-    //       console.log("Server is ready to take our messages");
-    //     }
-    //   });
-    // })
-
     await new Promise((resolve, reject) => {
       transporterHandler(mailOptions, (info) => {
         console.log("Email sent successfully");
@@ -127,9 +116,7 @@ module.exports = async (req, res) => {
   try {
     await sendEmail(res)
     console.log("first call ran")
-    // setTimeout(() => console.log("setTimeout"), 3000)
 
-    res.status(200).send('Email sent');
   } catch (error) {
     res.status(500).send('An error occurred while sending email');
   }
