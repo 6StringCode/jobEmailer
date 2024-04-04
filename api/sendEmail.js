@@ -79,35 +79,43 @@ async function sendEmail() {
 
   console.log("mailOptions:", mailOptions.subject)
 
+  try {
+    await new Promise((resolve, reject) => {
+      transporter.verify(async (error, success) => {
+        if (error) {
+          console.log(error);
+          reject(error)
+        } else {
+          console.log("Server is ready to take our messages");
+        }
+      });
+    })
 
-  // verify connection configuration
-  transporter.verify(async (error, success) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Server is ready to take our messages");
-    }
-  });
+    await new Promise((resolve, reject) => {
+      transporterHandler(mailOptions, (info) => {
+        console.log("Email sent successfully");
+        console.log("MESSAGE ID: ", info.messageId);
+        resolve(info)
+      })
+    })
 
-  transporterHandler(mailOptions, (info) => {
-    console.log("Email sent successfully");
-    console.log("MESSAGE ID: ", info.messageId);
-  })
+    // transporter.sendMail(mailOptions, (error, info) => {
+    //   if (error) {
+    //     console.log('Error Sending Email:', error)
+    //   } else {
+    //     console.log('Email sent:', info.response)
+    //   }
+    // })
 
+    //verify that we get here
+    console.log("We got here")
 
-  // transporter.sendMail(mailOptions, (error, info) => {
-  //   if (error) {
-  //     console.log('Error Sending Email:', error)
-  //   } else {
-  //     console.log('Email sent:', info.response)
-  //   }
-  // })
-
-  //verify that we get here
-  console.log("We got here")
-
-  previousState = jobData
-
+    previousState = jobData
+    res.status(200).send('Email sent')
+  } catch (error) {
+    console.log('An error occurred while sending email', error)
+    res.status(500).send('An error occurred while sending email')
+  }
 }
 
 // sendEmail();
