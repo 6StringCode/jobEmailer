@@ -14,7 +14,7 @@ app.listen(PORT, () => console.log(`App running on port ${PORT}`))
 //old stuff for testing
 // app.get('/api/sendEmail', async (req, res) => {
 //   try {
-//     const data = await sendEmail();
+//     const data = await sendEmail(res);
 //     res.json(data);
 //   } catch (error) {
 //     res.status(500).send('An error occurred while fetching jobs');

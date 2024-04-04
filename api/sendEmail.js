@@ -48,20 +48,28 @@ async function sendEmail(res) {
     return `<a href="${job.absolute_url}"><b>${job.title}</b> - Updated at: ${date}</a><br/>`;
   }).join('')
 
-
-  let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
+  let mailOptions = {
     from: email,
     to: email,
     subject: `${jobData.jobs.length} NYT Jobs Updated`,
     text: 'The data has been updated',
     html: `<h1>NYT Job Update</h1>${jobsHtml}`
-  } : {
-    from: email,
-    to: email,
-    subject: `${jobData.jobs.length} NYT Jobs: No Updates`,
-    text: 'The data hasnt been updated',
-    html: `<h1>There have been no updates</h1>${jobsHtml}`
   }
+
+  //TODO setup storage for data persistance and check if it's been updated
+  // let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
+  //   from: email,
+  //   to: email,
+  //   subject: `${jobData.jobs.length} NYT Jobs Updated`,
+  //   text: 'The data has been updated',
+  //   html: `<h1>NYT Job Update</h1>${jobsHtml}`
+  // } : {
+  //   from: email,
+  //   to: email,
+  //   subject: `${jobData.jobs.length} NYT Jobs: No Updates`,
+  //   text: 'The data hasnt been updated',
+  //   html: `<h1>There have been no updates</h1>${jobsHtml}`
+  // }
 
   try {
     await new Promise((resolve, reject) => {
