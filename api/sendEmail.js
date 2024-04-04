@@ -80,16 +80,16 @@ async function sendEmail() {
   console.log("mailOptions:", mailOptions.subject)
 
   try {
-    await new Promise((resolve, reject) => {
-      transporter.verify(async (error, success) => {
-        if (error) {
-          console.log(error);
-          reject(error)
-        } else {
-          console.log("Server is ready to take our messages");
-        }
-      });
-    })
+    // await new Promise((resolve, reject) => {
+    //   transporter.verify(async (error, success) => {
+    //     if (error) {
+    //       console.log(error);
+    //       reject(error)
+    //     } else {
+    //       console.log("Server is ready to take our messages");
+    //     }
+    //   });
+    // })
 
     await new Promise((resolve, reject) => {
       transporterHandler(mailOptions, (info) => {
