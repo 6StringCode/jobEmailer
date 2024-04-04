@@ -6,13 +6,11 @@ const email = process.env.EMAIL;
 const pass = process.env.EMAIL_PASS;
 const nytJobUrl = 'https://boards-api.greenhouse.io/v1/boards/thenewyorktimes/jobs';
 
-let previousState = null
-
 const getJobs = async () => {
   try {
     const response = await axios.get(nytJobUrl)
     const data = await response.data
-    // console.log(data)
+
     return data
   } catch (error) {
     console.log('Failed to fetch Jobs', error)
@@ -77,29 +75,27 @@ async function sendEmail(res) {
     html: `<h1>There have been no updates</h1>${jobsHtml}`
   }
 
-  console.log("mailOptions:", mailOptions.subject)
 
   try {
     await new Promise((resolve, reject) => {
-      transporterHandler(mailOptions, (info) => {
-        console.log("Email sent successfully");
-        console.log("MESSAGE ID: ", info.messageId);
-        resolve(info)
+      // transporterHandler(mailOptions, (info) => {
+      //   console.log("Email sent successfully");
+      //   console.log("MESSAGE ID: ", info.messageId);
+      //   resolve(info)
+      // })
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log('Error Sending Email:', error)
+        } else {
+          console.log('Email sent:', info.response)
+        }
       })
     })
 
-    // transporter.sendMail(mailOptions, (error, info) => {
-    //   if (error) {
-    //     console.log('Error Sending Email:', error)
-    //   } else {
-    //     console.log('Email sent:', info.response)
-    //   }
-    // })
 
     //verify that we get here
     console.log("We got here")
 
-    previousState = jobData
     res.status(200).send('Email sent')
   } catch (error) {
     console.log('An error occurred while sending email', error)
@@ -107,9 +103,6 @@ async function sendEmail(res) {
   }
 }
 
-// sendEmail();
-
-// setTimeout(async () => await sendEmail(), 2000)
 
 
 module.exports = async (req, res) => {
