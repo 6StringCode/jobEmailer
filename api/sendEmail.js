@@ -6,6 +6,7 @@ const email = process.env.EMAIL;
 const pass = process.env.EMAIL_PASS;
 const nytJobUrl = 'https://boards-api.greenhouse.io/v1/boards/thenewyorktimes/jobs';
 
+
 const getJobs = async () => {
   try {
     const response = await axios.get(nytJobUrl)
@@ -38,19 +39,8 @@ const transporterHandler = async (mailOptions, callback) => {
   }
 }
 
-// const transporterHandler = transporter.sendMail(mailOptions, (error, info) => {
-//   if (error) {
-//     console.log('Error Sending Email:', error)
-//   } else {
-//     console.log('Email sent:', info.response)
-//   }
-// })
-
-
 async function sendEmail(res) {
   const jobData = await getJobs()
-  // console.log(jobData.meta.total)
-
 
   //Email Html Formatting
   const jobsHtml = jobData.jobs.map(job => {
@@ -58,8 +48,6 @@ async function sendEmail(res) {
     return `<a href="${job.absolute_url}"><b>${job.title}</b> - Updated at: ${date}</a><br/>`;
   }).join('')
 
-
-  // console.log("inside emailHandler", JSON.stringify(previousState) === JSON.stringify(jobData))
 
   let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
     from: email,
@@ -75,26 +63,14 @@ async function sendEmail(res) {
     html: `<h1>There have been no updates</h1>${jobsHtml}`
   }
 
-
   try {
     await new Promise((resolve, reject) => {
-      // transporterHandler(mailOptions, (info) => {
-      //   console.log("Email sent successfully");
-      //   console.log("MESSAGE ID: ", info.messageId);
-      //   resolve(info)
-      // })
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log('Error Sending Email:', error)
-        } else {
-          console.log('Email sent:', info.response)
-        }
+      transporterHandler(mailOptions, (info) => {
+        console.log("Email sent successfully");
+        console.log("MESSAGE ID: ", info.messageId);
+        resolve(info)
       })
     })
-
-
-    //verify that we get here
-    console.log("We got here")
 
     res.status(200).send('Email sent')
   } catch (error) {
