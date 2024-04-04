@@ -127,7 +127,7 @@ module.exports = async (req, res) => {
   try {
     await sendEmail()
     console.log("first call ran")
-    setTimeout(() => console.log("setTimeout"), 3000)
+    // setTimeout(() => console.log("setTimeout"), 3000)
 
     res.status(200).send('Email sent');
   } catch (error) {
