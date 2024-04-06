@@ -1,22 +1,21 @@
 require('dotenv').config()
-const { default: axios } = require('axios');
 const nodemailer = require('nodemailer');
+const { uploadJobsToGCS, downloadJobsFromGCS } = require('../lib/storeJobs');
+const getJobs = require('../lib/getJobs');
 
 const email = process.env.EMAIL;
 const pass = process.env.EMAIL_PASS;
-const nytJobUrl = 'https://boards-api.greenhouse.io/v1/boards/thenewyorktimes/jobs';
+const bucketName = process.env.BUCKET_NAME
+
+let previousState;
+
+// (async () => {
+//   previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
+//   // console.log(previousState.meta)
+// })()
 
 
-const getJobs = async () => {
-  try {
-    const response = await axios.get(nytJobUrl)
-    const data = await response.data
 
-    return data
-  } catch (error) {
-    console.log('Failed to fetch Jobs', error)
-  }
-}
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -41,6 +40,12 @@ const transporterHandler = async (mailOptions, callback) => {
 
 async function sendEmail(res) {
   const jobData = await getJobs()
+  previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
+  console.log(await previousState.meta)
+  // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
+  //TODO compare jobData with google bucket
+
+
 
   //Email Html Formatting
   const jobsHtml = jobData.jobs.map(job => {
@@ -48,29 +53,31 @@ async function sendEmail(res) {
     return `<a href="${job.absolute_url}"><b>${job.title}</b> - Updated at: ${date}</a><br/>`;
   }).join('')
 
-  let mailOptions = {
-    from: email,
-    to: email,
-    subject: `${jobData.jobs.length} NYT Jobs Updated`,
-    text: 'The data has been updated',
-    html: `<h1>NYT Job Update</h1>${jobsHtml}`
-  }
-
-  //TODO setup storage for data persistance and check if it's been updated
-  // let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
+  // let mailOptions = {
   //   from: email,
   //   to: email,
   //   subject: `${jobData.jobs.length} NYT Jobs Updated`,
   //   text: 'The data has been updated',
   //   html: `<h1>NYT Job Update</h1>${jobsHtml}`
-  // } : {
-  //   from: email,
-  //   to: email,
-  //   subject: `${jobData.jobs.length} NYT Jobs: No Updates`,
-  //   text: 'The data hasnt been updated',
-  //   html: `<h1>There have been no updates</h1>${jobsHtml}`
   // }
 
+
+  let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
+    from: email,
+    to: email,
+    subject: `${jobData.jobs.length} NYT Jobs Updated`,
+    text: 'The data has been updated',
+    html: `<h1>NYT Job Update</h1>${jobsHtml}`
+  } : {
+    from: email,
+    to: email,
+    subject: `${jobData.jobs.length} NYT Jobs: No Updates`,
+    text: 'The data hasnt been updated',
+    html: `<h1>There have been no updates</h1>${jobsHtml}`
+  }
+
+  // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
+  // if (res) {
   try {
     await new Promise((resolve, reject) => {
       transporterHandler(mailOptions, (info) => {
@@ -80,21 +87,118 @@ async function sendEmail(res) {
       })
     })
 
+    previousState = jobData
     res.status(200).send('Email sent')
   } catch (error) {
     console.log('An error occurred while sending email', error)
-    res.status(500).send('An error occurred while sending email')
+    if (res) {
+      res.status(500).send('An error occurred while sending email')
+    }
   }
+  // } else {
+  //   console.log("res is undefined")
+  // }
+  // }
+
+  uploadJobsToGCS(bucketName, jobData)
 }
 
 
 
-module.exports = async (req, res) => {
+module.exports = async (res) => {
   try {
-    await sendEmail(res)
-    console.log("first call ran")
+    await sendEmail(req, res)
 
   } catch (error) {
     res.status(500).send('An error occurred while sending email');
   }
 };
+
+
+
+// const testData = {
+//   jobs: [
+//     {
+//       absolute_url: 'https://boards.greenhouse.io/thenewyorktimes/jobs/4357192005',
+//       data_compliance: [Array],
+//       internal_job_id: 4257146005,
+//       location: [Object],
+//       metadata: null,
+//       id: 4357192005,
+//       updated_at: '2024-04-05T18:03:26-04:00',
+//       requisition_id: 'REQ-015993',
+//       title: ' Product Designer, News App'
+//     },
+//     {
+//       absolute_url: 'https://boards.greenhouse.io/thenewyorktimes/jobs/4339517005',
+//       data_compliance: [Array],
+//       internal_job_id: 4248560005,
+//       location: [Object],
+//       metadata: null,
+//       id: 4339517005,
+//       updated_at: '2024-03-29T14:28:43-04:00',
+//       requisition_id: 'REQ-015774',
+//       title: 'Product Director, Ad Demand Development'
+//     },
+//     {
+//       absolute_url: 'https://boards.greenhouse.io/thenewyorktimes/jobs/4330089005',
+//       data_compliance: [Array],
+//       internal_job_id: 4242782005,
+//       location: [Object],
+//       metadata: null,
+//       id: 4330089005,
+//       updated_at: '2024-03-29T14:28:43-04:00',
+//       requisition_id: 'REQ-015665',
+//       title: 'Senior Data Scientist, Data and Insights, Algorithmic Recommendations'
+//     },
+//     {
+//       absolute_url: 'https://boards.greenhouse.io/thenewyorktimes/jobs/4366383005',
+//       data_compliance: [Array],
+//       internal_job_id: 4262247005,
+//       location: [Object],
+//       metadata: null,
+//       id: 4366383005,
+//       updated_at: '2024-03-29T14:28:43-04:00',
+//       requisition_id: 'REQ-016159',
+//       title: 'Senior Design Editor, A.I. Initiatives'
+//     },
+//     {
+//       absolute_url: 'https://boards.greenhouse.io/thenewyorktimes/jobs/4367003005',
+//       data_compliance: [Array],
+//       internal_job_id: 4262680005,
+//       location: [Object],
+//       metadata: null,
+//       id: 4367003005,
+//       updated_at: '2024-03-29T14:28:43-04:00',
+//       requisition_id: 'REQ-016173',
+//       title: 'Senior Software Engineer, Digital Advertising'
+//     },
+//     {
+//       absolute_url: 'https://boards.greenhouse.io/thenewyorktimes/jobs/4364130005',
+//       data_compliance: [Array],
+//       internal_job_id: 4261050005,
+//       location: [Object],
+//       metadata: null,
+//       id: 4364130005,
+//       updated_at: '2024-03-29T14:28:43-04:00',
+//       requisition_id: 'REQ-016134',
+//       title: 'Senior Software Engineer, Identity'
+//     },
+//     {
+//       absolute_url: 'https://boards.greenhouse.io/thenewyorktimes/jobs/4381124005',
+//       data_compliance: [Array],
+//       internal_job_id: 4270313005,
+//       location: [Object],
+//       metadata: null,
+//       id: 4381124005,
+//       updated_at: '2024-03-29T14:37:56-04:00',
+//       requisition_id: 'REQ-016255',
+//       title: 'Software Engineer, Data Infrastructure'
+//     }
+//   ],
+//   meta: { total: 7 }
+// };
+
+
+
+
