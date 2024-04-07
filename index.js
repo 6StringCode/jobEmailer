@@ -3,22 +3,25 @@ const express = require('express');
 const sendEmail = require('./api/sendEmail');
 
 const app = express()
-const PORT = process.env.PORT || 3000
+const port = process.env.PORT || 3000
 
 app.use(express.json())
 
-app.listen(PORT, () => console.log(`App running on port ${PORT}`))
+app.listen(port, () => console.log(`App running on port ${port}`))
 
 
+// app.get('/', (req, res) => {
+//   res.send('Job Opening Emailer')
+// })
 
 //old stuff for testing
-// app.get('/api/sendEmail', async (res) => {
-//   try {
-//     const data = await sendEmail(res);
-//     res.json(data);
-//   } catch (error) {
-//     res.status(500).send('An error occurred while fetching jobs');
-//   }
-// });
+app.get('/api/sendEmail', async (req, res) => {
+  // try {
+  await sendEmail(res);
+  // } catch (error) {
+  //   console.log("error:", error)
+  // res.status(500).send('An error occurred while fetching jobs', error);
+  // }
+});
 
 // app.post('/send-email', sendEmail);
