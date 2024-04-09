@@ -101,7 +101,7 @@ async function sendEmail(res) {
   // }
   // }
 
-  await uploadJobsToGCS(bucketName, "test.txt", jobData)
+  // await uploadJobsToGCS(bucketName, "test.txt", jobData)
 }
 
 
