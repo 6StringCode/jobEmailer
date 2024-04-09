@@ -77,30 +77,41 @@ async function sendEmail(req, res) {
     html: `<h1>There have been no updates</h1>${jobsHtml}`
   }
 
-  // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
-  // if (res) {
+  if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
+    try {
+      await new Promise((resolve, reject) => {
+        transporterHandler(mailOptions, (info) => {
+          console.log("Email sent successfully");
+          console.log("MESSAGE ID: ", info.messageId);
+          resolve(info)
+        })
+      })
+
+      // previousState = jobData
+      res.status(200).send('Email sent')
+    } catch (error) {
+      console.log('An error occurred while sending email', error)
+      if (res) {
+        res.status(500).send('An error occurred while sending email')
+      }
+    }
+    // } else {
+    //   console.log("res is undefined")
+    // }
+  }
+
   try {
     await new Promise((resolve, reject) => {
-      transporterHandler(mailOptions, (info) => {
-        console.log("Email sent successfully");
-        console.log("MESSAGE ID: ", info.messageId);
-        resolve(info)
-      })
+      uploadJobsToGCS(bucketName, "test.txt", jobData)
+      resolve(jobData)
     })
-
-    // previousState = jobData
-    res.status(200).send('Email sent')
+    res.status(200).send('Job Data Uploaded successfully')
   } catch (error) {
-    console.log('An error occurred while sending email', error)
+    console.log('An error occurred while uploading job data', error)
     if (res) {
-      res.status(500).send('An error occurred while sending email')
+      res.status(500).send('An error occurred while uploading job data')
     }
   }
-  // } else {
-  //   console.log("res is undefined")
-  // }
-  // }
-
   // await uploadJobsToGCS(bucketName, "test.txt", jobData)
 }
 
