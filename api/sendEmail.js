@@ -100,18 +100,18 @@ async function sendEmail(req, res) {
     // }
   }
 
-  try {
-    await new Promise((resolve, reject) => {
-      uploadJobsToGCS(bucketName, "test.txt", jobData)
-      resolve(jobData)
-    })
-    res.status(200).send('Job Data Uploaded successfully')
-  } catch (error) {
-    console.log('An error occurred while uploading job data', error)
-    if (res) {
-      res.status(500).send('An error occurred while uploading job data')
-    }
-  }
+  // try {
+  //   await new Promise((resolve, reject) => {
+  //     uploadJobsToGCS(bucketName, "test.txt", jobData)
+  //     resolve(jobData)
+  //   })
+  //   res.status(200).send('Job Data Uploaded successfully')
+  // } catch (error) {
+  //   console.log('An error occurred while uploading job data', error)
+  //   if (res) {
+  //     res.status(500).send('An error occurred while uploading job data')
+  //   }
+  // }
   // await uploadJobsToGCS(bucketName, "test.txt", jobData)
 }
 
