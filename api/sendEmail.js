@@ -41,9 +41,9 @@ const transporterHandler = async (mailOptions, callback) => {
 async function sendEmail(req, res) {
   const jobData = await getJobs()
   // console.log(jobData)
-  // previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
-  // console.log(await previousState.meta)
-  // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
+  previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
+  console.log(await previousState.meta)
+  console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
   //TODO compare jobData with google bucket
 
 
