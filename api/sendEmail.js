@@ -41,9 +41,9 @@ const transporterHandler = async (mailOptions, callback) => {
 async function sendEmail(req, res) {
   const jobData = await getJobs()
   // console.log(jobData)
-  previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
-  console.log(await previousState.meta)
-  console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
+  // previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
+  // console.log(await previousState.meta)
+  // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
   //TODO compare jobData with google bucket
 
 
@@ -77,28 +77,28 @@ async function sendEmail(req, res) {
     html: `<h1>There have been no updates</h1>${jobsHtml}`
   }
 
-  if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
-    try {
-      await new Promise((resolve, reject) => {
-        transporterHandler(mailOptions, (info) => {
-          console.log("Email sent successfully");
-          console.log("MESSAGE ID: ", info.messageId);
-          resolve(info)
-        })
+  // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
+  try {
+    await new Promise((resolve, reject) => {
+      transporterHandler(mailOptions, (info) => {
+        console.log("Email sent successfully");
+        console.log("MESSAGE ID: ", info.messageId);
+        resolve(info)
       })
+    })
 
-      // previousState = jobData
-      res.status(200).send('Email sent')
-    } catch (error) {
-      console.log('An error occurred while sending email', error)
-      if (res) {
-        res.status(500).send('An error occurred while sending email')
-      }
+    // previousState = jobData
+    res.status(200).send('Email sent')
+  } catch (error) {
+    console.log('An error occurred while sending email', error)
+    if (res) {
+      res.status(500).send('An error occurred while sending email')
     }
-    // } else {
-    //   console.log("res is undefined")
-    // }
   }
+  // } else {
+  //   console.log("res is undefined")
+  // }
+  // }
 
   // try {
   //   await new Promise((resolve, reject) => {
