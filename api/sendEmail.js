@@ -38,7 +38,7 @@ const transporterHandler = async (mailOptions, callback) => {
   }
 }
 
-async function sendEmail(res) {
+async function sendEmail(req, res) {
   const jobData = await getJobs()
   // console.log(jobData)
   // previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
@@ -106,9 +106,9 @@ async function sendEmail(res) {
 
 
 
-module.exports = async (res) => {
+module.exports = async (req, res) => {
   try {
-    await sendEmail(res)
+    await sendEmail(req, res)
 
   } catch (error) {
     res.status(500).send('An error occurred while sending email');
