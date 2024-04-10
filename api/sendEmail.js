@@ -67,10 +67,12 @@ async function sendEmail(req, res) {
           console.log("MESSAGE ID: ", info.messageId);
           resolve(info)
         })
+        res.status(200).send('Email sent')
+      } else {
+        console.log("Jobs have not been updated. Email not sent")
       }
     })
 
-    res.status(200).send('Email sent')
   } catch (error) {
     console.log('An error occurred while sending email', error)
     if (res) {
