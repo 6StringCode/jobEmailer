@@ -9,13 +9,6 @@ const bucketName = process.env.BUCKET_NAME
 
 let previousState;
 
-// (async () => {
-//   previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
-//   console.log(previousState.meta)
-// })()
-
-
-
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -42,11 +35,6 @@ const transporterHandler = async (mailOptions, callback) => {
 async function sendEmail(req, res) {
   const jobData = await getJobs()
   previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
-  console.log(previousState)
-
-  // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
-  //TODO compare jobData with google bucket
-
 
 
   //Email Html Formatting
@@ -71,7 +59,7 @@ async function sendEmail(req, res) {
 
   try {
     await new Promise((resolve, reject) => {
-      // uploadJobsToGCS(bucketName, "test.txt", jobData)
+      uploadJobsToGCS(bucketName, "test.txt", jobData)
       // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
       // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
 
