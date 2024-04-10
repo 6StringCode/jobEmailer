@@ -39,6 +39,9 @@ const transporterHandler = async (mailOptions, callback) => {
 }
 
 
+// previousState = downloadJobsFromGCS(bucketName, 'test.txt')
+// console.log(previousState)
+
 async function sendEmail(req, res) {
   const jobData = getJobs()
   // console.log(await previousState.meta)
@@ -77,25 +80,21 @@ async function sendEmail(req, res) {
   }
 
   try {
-    const results = await new Promise.all([
-      previousState = downloadJobsFromGCS(bucketName, 'test.txt'),
-      new Promise((resolve, reject) => {
-        // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
+    await new Promise((resolve, reject) => {
+      // uploadJobsToGCS(bucketName, "test.txt", jobData)
+      // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
 
-        // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
-        transporterHandler(mailOptions, (info) => {
-          console.log("Email sent successfully");
-          console.log("MESSAGE ID: ", info.messageId);
-          resolve(info)
-        })
-        // }
-      }),
-      uploadJobsToGCS(bucketName, "test.txt", jobData)
-    ])
-    console.log(results)
+      // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
+      transporterHandler(mailOptions, (info) => {
+        console.log("Email sent successfully");
+        console.log("MESSAGE ID: ", info.messageId);
+        resolve(info)
+      })
+      // }
+    })
 
-    res.status(200).send('Email sent')
     // previousState = jobData
+    res.status(200).send('Email sent')
   } catch (error) {
     console.log('An error occurred while sending email', error)
     if (res) {
