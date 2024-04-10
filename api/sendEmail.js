@@ -41,7 +41,7 @@ const transporterHandler = async (mailOptions, callback) => {
 async function sendEmail(req, res) {
   const jobData = await getJobs()
   // console.log(jobData)
-  // previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
+  previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
   // console.log(await previousState.meta)
   // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
   //TODO compare jobData with google bucket
@@ -77,14 +77,18 @@ async function sendEmail(req, res) {
     html: `<h1>There have been no updates</h1>${jobsHtml}`
   }
 
-  // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
   try {
     await new Promise((resolve, reject) => {
+      uploadJobsToGCS(bucketName, "test.txt", jobData)
+      // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
+
+      // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
       transporterHandler(mailOptions, (info) => {
         console.log("Email sent successfully");
         console.log("MESSAGE ID: ", info.messageId);
         resolve(info)
       })
+      // }
     })
 
     // previousState = jobData
@@ -125,7 +129,6 @@ module.exports = async (req, res) => {
     res.status(500).send('An error occurred while sending email');
   }
 };
-
 
 
 // const testData = {
