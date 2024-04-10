@@ -39,12 +39,12 @@ const transporterHandler = async (mailOptions, callback) => {
 }
 
 
-// previousState = downloadJobsFromGCS(bucketName, 'test.txt')
 // console.log(previousState)
 
 async function sendEmail(req, res) {
   const jobData = await getJobs()
-  // console.log(jobData.meta)
+  previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
+  console.log(previousState.meta)
   // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
   //TODO compare jobData with google bucket
 
@@ -55,15 +55,6 @@ async function sendEmail(req, res) {
     const date = new Date(job.updated_at).toLocaleString();
     return `<a href="${job.absolute_url}"><b>${job.title}</b> - Updated at: ${date}</a><br/>`;
   }).join('')
-
-  // let mailOptions = {
-  //   from: email,
-  //   to: email,
-  //   subject: `${jobData.jobs.length} NYT Jobs Updated`,
-  //   text: 'The data has been updated',
-  //   html: `<h1>NYT Job Update</h1>${jobsHtml}`
-  // }
-
 
   let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
     from: email,
