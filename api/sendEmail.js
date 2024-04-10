@@ -70,7 +70,7 @@ async function sendEmail(req, res) {
         res.status(200).send('Email sent')
       } else {
         res.status(200).send('Jobs have not been updated. Email not sent')
-        console.log("Jobs have not been updated. Email not sent")
+        console.log("Email not sent: Jobs have not been updated.")
       }
     })
 
