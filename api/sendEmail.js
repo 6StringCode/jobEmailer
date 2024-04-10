@@ -3,8 +3,8 @@ const nodemailer = require('nodemailer');
 const { uploadJobsToGCS, downloadJobsFromGCS } = require('../lib/storeJobs');
 const getJobs = require('../lib/getJobs');
 
-const email = process.env.EMAIL;
-const pass = process.env.EMAIL_PASS;
+const email = process.env.EMAIL
+const pass = process.env.EMAIL_PASS
 const bucketName = process.env.BUCKET_NAME
 
 let previousJobData;
@@ -60,15 +60,14 @@ async function sendEmail(req, res) {
   try {
     await new Promise((resolve, reject) => {
       uploadJobsToGCS(bucketName, "test.txt", jobData)
-      console.log(JSON.stringify(jobData) === JSON.stringify(previousJobData))
-      // if (JSON.stringify(jobData) !== JSON.stringify(previousJobData)) {
 
-      transporterHandler(mailOptions, (info) => {
-        console.log("Email sent successfully");
-        console.log("MESSAGE ID: ", info.messageId);
-        resolve(info)
-      })
-      // }
+      if (JSON.stringify(jobData) !== JSON.stringify(previousJobData)) {
+        transporterHandler(mailOptions, (info) => {
+          console.log("Email sent successfully");
+          console.log("MESSAGE ID: ", info.messageId);
+          resolve(info)
+        })
+      }
     })
 
     res.status(200).send('Email sent')
@@ -78,26 +77,7 @@ async function sendEmail(req, res) {
       res.status(500).send('An error occurred while sending email')
     }
   }
-  // } else {
-  //   console.log("res is undefined")
-  // }
-  // }
-
-  // try {
-  //   await new Promise((resolve, reject) => {
-  //     uploadJobsToGCS(bucketName, "test.txt", jobData)
-  //     resolve(jobData)
-  //   })
-  //   res.status(200).send('Job Data Uploaded successfully')
-  // } catch (error) {
-  //   console.log('An error occurred while uploading job data', error)
-  //   if (res) {
-  //     res.status(500).send('An error occurred while uploading job data')
-  //   }
-  // }
-  // await uploadJobsToGCS(bucketName, "test.txt", jobData)
 }
-
 
 
 module.exports = async (req, res) => {
