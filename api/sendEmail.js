@@ -9,10 +9,10 @@ const bucketName = process.env.BUCKET_NAME
 
 let previousState;
 
-// (async () => {
-//   previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
-//   // console.log(previousState.meta)
-// })()
+(async () => {
+  previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
+  console.log(previousState.meta)
+})()
 
 
 
@@ -39,8 +39,8 @@ const transporterHandler = async (mailOptions, callback) => {
 }
 
 
-previousState = downloadJobsFromGCS(bucketName, 'test.txt')
-console.log(previousState)
+// previousState = downloadJobsFromGCS(bucketName, 'test.txt')
+// console.log(previousState)
 
 async function sendEmail(req, res) {
   const jobData = getJobs()
