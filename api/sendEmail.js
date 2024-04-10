@@ -83,8 +83,8 @@ async function sendEmail(req, res) {
     await new Promise((resolve, reject) => {
       // uploadJobsToGCS(bucketName, "test.txt", jobData)
       // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
-
       // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
+
       transporterHandler(mailOptions, (info) => {
         console.log("Email sent successfully");
         console.log("MESSAGE ID: ", info.messageId);
@@ -126,7 +126,6 @@ async function sendEmail(req, res) {
 module.exports = async (req, res) => {
   try {
     await sendEmail(req, res)
-
   } catch (error) {
     res.status(500).send('An error occurred while sending email');
   }
