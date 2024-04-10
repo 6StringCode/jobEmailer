@@ -65,9 +65,9 @@ async function sendEmail(req, res) {
       transporterHandler(mailOptions, (info) => {
         console.log("Email sent successfully");
         console.log("MESSAGE ID: ", info.messageId);
+        uploadJobsToGCS(bucketName, "test.txt", jobData)
+        resolve(info)
       })
-      uploadJobsToGCS(bucketName, "test.txt", jobData)
-      resolve(info)
       // }
     })
 
