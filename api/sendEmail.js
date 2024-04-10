@@ -38,8 +38,8 @@ const transporterHandler = async (mailOptions, callback) => {
   }
 }
 
-const jobData = await getJobs()
-console.log(jobData)
+const jobData = getJobs()
+console.log(await jobData)
 
 async function sendEmail(req, res) {
   // previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
