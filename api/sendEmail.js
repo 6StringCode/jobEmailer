@@ -7,7 +7,7 @@ const email = process.env.EMAIL;
 const pass = process.env.EMAIL_PASS;
 const bucketName = process.env.BUCKET_NAME
 
-let previousState;
+let previousJobData;
 
 
 const transporter = nodemailer.createTransport({
@@ -34,7 +34,7 @@ const transporterHandler = async (mailOptions, callback) => {
 
 async function sendEmail(req, res) {
   const jobData = await getJobs()
-  previousState = await downloadJobsFromGCS(bucketName, 'test.txt')
+  previousJobData = await downloadJobsFromGCS(bucketName, 'test.txt')
 
 
   //Email Html Formatting
@@ -43,7 +43,7 @@ async function sendEmail(req, res) {
     return `<a href="${job.absolute_url}"><b>${job.title}</b> - Updated at: ${date}</a><br/>`;
   }).join('')
 
-  let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousState)) ? {
+  let mailOptions = (JSON.stringify(jobData) !== JSON.stringify(previousJobData)) ? {
     from: email,
     to: email,
     subject: `${jobData.jobs.length} NYT Jobs Updated`,
@@ -59,19 +59,18 @@ async function sendEmail(req, res) {
 
   try {
     await new Promise((resolve, reject) => {
-      // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
-      // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
+      uploadJobsToGCS(bucketName, "test.txt", jobData)
+      console.log(JSON.stringify(jobData) === JSON.stringify(previousJobData))
+      // if (JSON.stringify(jobData) !== JSON.stringify(previousJobData)) {
 
       transporterHandler(mailOptions, (info) => {
         console.log("Email sent successfully");
         console.log("MESSAGE ID: ", info.messageId);
-        uploadJobsToGCS(bucketName, "test.txt", jobData)
         resolve(info)
       })
       // }
     })
 
-    // previousState = jobData
     res.status(200).send('Email sent')
   } catch (error) {
     console.log('An error occurred while sending email', error)
