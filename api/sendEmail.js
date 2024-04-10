@@ -59,7 +59,6 @@ async function sendEmail(req, res) {
 
   try {
     await new Promise((resolve, reject) => {
-      uploadJobsToGCS(bucketName, "test.txt", jobData)
       // console.log(JSON.stringify(jobData) === JSON.stringify(previousState))
       // if (JSON.stringify(jobData) !== JSON.stringify(previousState)) {
 
@@ -71,6 +70,7 @@ async function sendEmail(req, res) {
       // }
     })
 
+    uploadJobsToGCS(bucketName, "test.txt", jobData)
     // previousState = jobData
     res.status(200).send('Email sent')
   } catch (error) {
