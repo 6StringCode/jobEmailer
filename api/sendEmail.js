@@ -61,17 +61,17 @@ async function sendEmail(req, res) {
     await new Promise((resolve, reject) => {
       uploadJobsToGCS(bucketName, "test.txt", jobData)
 
-      if (JSON.stringify(jobData) !== JSON.stringify(previousJobData)) {
-        transporterHandler(mailOptions, (info) => {
-          console.log("Email sent successfully");
-          console.log("MESSAGE ID: ", info.messageId);
-          resolve(info)
-        })
-        res.status(200).send('Email sent')
-      } else {
-        res.status(200).send('Jobs have not been updated. Email not sent')
-        console.log("Email not sent: Jobs have not been updated.")
-      }
+      // if (JSON.stringify(jobData) !== JSON.stringify(previousJobData)) {
+      transporterHandler(mailOptions, (info) => {
+        console.log("Email sent successfully");
+        console.log("MESSAGE ID: ", info.messageId);
+        resolve(info)
+      })
+      res.status(200).send('Email sent')
+      // } else {
+      //   res.status(200).send('Jobs have not been updated. Email not sent')
+      //   console.log("Email not sent: Jobs have not been updated.")
+      // }
     })
 
   } catch (error) {
